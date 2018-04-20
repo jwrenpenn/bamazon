@@ -1,4 +1,4 @@
 # bamazon
 
-![image] (bamazon/readMeImages/1.png)
+![image 1] (readMeImages/1.png)
 
