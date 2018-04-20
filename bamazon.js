@@ -11,18 +11,16 @@ var connection = mysql.createConnection({
     database: "bamazondb"
 })
 
-//Connect To Bamazon database
 function dbConnect() {
     connection.connect(function(error) {
         if (error) throw error;
-        // clear();
         console.log(connection.threadId);
         customer = connection.threadId;
         productList();
     })  
 }
 
-//Build a table of products for sale
+
 function productList() {
     clear();
     console.log('Serving customer ' + customer + '\n'); 
@@ -31,6 +29,7 @@ function productList() {
         for (var i = 0; i < result.length; i++) {
             choiceArray.push(result[i]);
         }
+
         console.log('Bamazon Product Catalog\n')
         console.table(choiceArray, "lllrr");
         placeOrder();
@@ -38,7 +37,7 @@ function productList() {
 
 }
 
-//Ask for item to order
+
 function placeOrder() {
     inquirer.prompt({
         name: "itemid",
@@ -50,8 +49,9 @@ function placeOrder() {
         connection.query(query, { itemid: itemid }, function(error, result) {
             if (result.length == 0) {
                 console.log("\n Unable to find product " + itemid + ". Please check your product and reenter.");
-                placeOrder();
-            } else {
+                placeOrder();  
+            } 
+            else {
                 var productName = result[0].productname;
                 var price = result[0].price;
                 var stockQuantity = parseInt(result[0].stockquantity);
@@ -61,7 +61,7 @@ function placeOrder() {
     })
 };
 
-//Ask for quantity to purchase
+
 function purchaseQuantity(itemid, productName, price, stockQuantity) {
     inquirer.prompt({
         name: "quantity",
@@ -71,24 +71,25 @@ function purchaseQuantity(itemid, productName, price, stockQuantity) {
         var purchaseQuantity = parseInt(quantity.quantity);
         if (purchaseQuantity > 0) {
             inventoryCheck(itemid, productName, price, stockQuantity, purchaseQuantity);
-        } else {
+        } 
+        else {
             console.log("\n Please check the quantity to purchase.");
             placeOrder();
         }
     })
 }
 
-//Check inventory to see if order can be filled
+
 function inventoryCheck(itemid, productName, price, stockQuantity, purchaseQuantity) {
     if (purchaseQuantity <= stockQuantity) {
         updateInventory(itemid, productName, price, stockQuantity, purchaseQuantity);
-    } else {
+    } 
+    else {
         console.log("\n We are unable to fill your order for " + productName + ". There's only " + stockQuantity + " available. Please update quantity.");
         placeOrder();
     }
 }
 
-//Update inventory after sale
 function updateInventory(itemid, productName, price, stockQuantity, purchaseQuantity) {
     stockQuantity -= purchaseQuantity;
     var query = 'UPDATE products SET stockquantity = ? WHERE itemid = ?';
@@ -98,10 +99,9 @@ function updateInventory(itemid, productName, price, stockQuantity, purchaseQuan
     });
 }
 
-//Sale summary
+
 function completeOrder(itemid, productName, price, stockQuantity, purchaseQuantity) {
     console.log('\nThank you Customer ' + customer + ' for your order.');
-    // console.log(purchaseQuantity);
     console.log( "You are purchasing " + purchaseQuantity + ' ' + productName + " at $" + price.toFixed(2) + ' each.');
     console.log( "Your total is $"  + (price * purchaseQuantity).toFixed(2)); 
     continueShopping();
@@ -118,7 +118,8 @@ function continueShopping() {
         if (answer == 'y') {
             console.log("\n");
             productList();
-        } else {
+        } 
+        else {
             console.log("\nHave a Great Day.");
             connection.end();
         }
